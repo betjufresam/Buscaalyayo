@@ -1,0 +1,132 @@
+{
+  "pacients": {
+    "00SSTT00": {
+      "contacte": "677888999",
+      "edat": 86,
+      "estat": "dins",
+      "nom": "Lluïsa Vidal",
+      "tag_id": "00SSTT00",
+      "ubicacio": "Habitació 102"
+    },
+    "11QQRR99": {
+      "contacte": "644555666",
+      "edat": 93,
+      "estat": "dins",
+      "nom": "Francesc Puig",
+      "tag_id": "11QQRR99",
+      "ubicacio": "Menjador"
+    },
+    "22OOPP88": {
+      "contacte": "688999000",
+      "edat": 80,
+      "estat": "dins",
+      "nom": "Dolors Martí",
+      "tag_id": "22OOPP88",
+      "ubicacio": "Gimnàs"
+    },
+    "33MMNN77": {
+      "contacte": "611222333",
+      "edat": 87,
+      "estat": "dins",
+      "nom": "Antoni Serra",
+      "tag_id": "33MMNN77",
+      "ubicacio": "Passadís A"
+    },
+    "44KKLL66": {
+      "contacte": "655666777",
+      "edat": 84,
+      "estat": "dins",
+      "nom": "Montserrat Roig",
+      "tag_id": "44KKLL66",
+      "ubicacio": "Biblioteca"
+    },
+    "55IIJJ55": {
+      "contacte": "622333444",
+      "edat": 91,
+      "estat": "dins",
+      "nom": "Jordi Pont",
+      "tag_id": "55IIJJ55",
+      "ubicacio": "Habitació 105"
+    },
+    "66GGHH44": {
+      "contacte": "633444555",
+      "edat": 79,
+      "estat": "dins",
+      "nom": "Carme Vila",
+      "tag_id": "66GGHH44",
+      "ubicacio": "Jardí"
+    },
+    "77EEFF33": {
+      "contacte": "600111222",
+      "edat": 88,
+      "estat": "dins",
+      "nom": "Pere Soler",
+      "tag_id": "77EEFF33",
+      "ubicacio": "Sala de dalt"
+    },
+    "88CCDD22": {
+      "contacte": "679166559",
+      "edat": 82,
+      "estat": "dins",
+      "nom": "Maria Garcia",
+      "tag_id": "88CCDD22",
+      "ubicacio": "Menjador"
+    },
+    "99AABB11": {
+      "contacte": "666777654",
+      "edat": 85,
+      "estat": "dins",
+      "nom": "Bet Jufresa",
+      "tag_id": "99AABB11",
+      "ubicacio": "Habitació 101"
+    }
+  },
+  "staff": {
+    "auxiliar01": {
+      "clau": "1234",
+      "nom": "Joan Pou",
+      "rol": "Auxiliar",
+      "usuari": "joan_pou"
+    },
+    "infermera01": {
+      "clau": "admin2024",
+      "nom": "Marta Lopez",
+      "rol": "Infermera Cap",
+      "usuari": "marta_lopez"
+    }
+  },
+  "ubicacions": {
+    "zona_01": {
+      "es_exterior": false,
+      "nom": "Habitació 101"
+    },
+    "zona_02": {
+      "es_exterior": false,
+      "nom": "Habitació 102"
+    },
+    "zona_03": {
+      "es_exterior": false,
+      "nom": "Menjador"
+    },
+    "zona_04": {
+      "es_exterior": false,
+      "nom": "Sala de dalt"
+    },
+    "zona_05": {
+      "es_exterior": false,
+      "nom": "Jardí"
+    },
+    "zona_06": {
+      "es_exterior": false,
+      "nom": "Gimnàs"
+    },
+    "zona_07": {
+      "es_exterior": false,
+      "nom": "Biblioteca"
+    },
+    "zona_08": {
+      "es_exterior": true,
+      "nom": "Sortida Carrer"
+    }
+  }
+}
