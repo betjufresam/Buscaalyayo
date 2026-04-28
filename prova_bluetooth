@@ -1,0 +1,111 @@
+#include <SPI.h>
+#include <MFRC522.h>
+#include <BLEDevice.h>
+#include <BLEServer.h>
+#include <BLEUtils.h>
+#include <BLE2902.h> 
+
+// --- PINS DEL MAQUINARI ---
+#define SS_PIN 5
+#define RST_PIN 21
+#define LED_PIN 22 // El pin on tens el LED amb la resistència
+
+MFRC522 rfid(SS_PIN, RST_PIN);
+
+// --- CONFIGURACIÓ BLUETOOTH ---
+#define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
+#define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
+
+BLEServer* pServer = NULL;
+BLECharacteristic* pCharacteristic = NULL;
+bool deviceConnected = false;
+
+// ⚠️ ATENCIÓ: CANVIA AQUEST NOM PER A CADA CAIXA!
+// A la caixa 1 posa "ESP32_Menjador", a la caixa 2 posa "ESP32_Sortida"
+String nomLector = "ESP32_Menjador"; 
+
+class MyServerCallbacks: public BLEServerCallbacks {
+    void onConnect(BLEServer* pServer) {
+      deviceConnected = true;
+      Serial.println("App connectada per Bluetooth!");
+    };
+    void onDisconnect(BLEServer* pServer) {
+      deviceConnected = false;
+      Serial.println("App desconnectada. Tornant a buscar...");
+      BLEDevice::startAdvertising(); 
+    }
+};
+
+void setup() {
+  Serial.begin(115200);
+  
+  // Configurar LED
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW); // Apagat al principi
+
+  // Iniciar RFID
+  SPI.begin();
+  rfid.PCD_Init();
+
+  // Iniciar Bluetooth
+  Serial.println("Iniciant Bluetooth...");
+  
+  // El nom que emetrà el Bluetooth serà el que hem definit a dalt
+  BLEDevice::init(nomLector.c_str()); 
+  
+  pServer = BLEDevice::createServer();
+  pServer->setCallbacks(new MyServerCallbacks());
+  BLEService *pService = pServer->createService(SERVICE_UUID);
+  pCharacteristic = pService->createCharacteristic(
+                      CHARACTERISTIC_UUID,
+                      BLECharacteristic::PROPERTY_READ   |
+                      BLECharacteristic::PROPERTY_NOTIFY
+                    );
+  pCharacteristic->addDescriptor(new BLE2902());
+  pService->start();
+  
+  BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
+  pAdvertising->addServiceUUID(SERVICE_UUID);
+  pAdvertising->setScanResponse(false);
+  pAdvertising->setMinPreferred(0x0);  
+  BLEDevice::startAdvertising();
+  
+  Serial.println("Bluetooth a punt! Esperant polseres...");
+}
+
+void loop() {
+  // 1. Comprovar si hi ha un pacient apropant el TAG
+  if (!rfid.PICC_IsNewCardPresent()) return;
+  if (!rfid.PICC_ReadCardSerial()) return;
+
+  // 2. Llegir el número (UID) de la polsera
+  String tagUID = "";
+  for (byte i = 0; i < rfid.uid.size; i++) {
+    tagUID += String(rfid.uid.uidByte[i] < 0x10 ? "0" : "");
+    tagUID += String(rfid.uid.uidByte[i], HEX);
+  }
+  tagUID.toUpperCase(); // Ho posem en majúscules perquè coincideixi amb el teu Firebase
+  
+  Serial.println("S'ha llegit la polsera: " + tagUID);
+
+  // 3. Encendre el LED de la caixa
+  digitalWrite(LED_PIN, HIGH);
+
+  // 4. Si l'ordinador està connectat, li enviem la dada per Bluetooth
+  if (deviceConnected) {
+    // Creem un petit text amb l'ID de la polsera i quin lector l'ha detectat
+    String missatge = "{\"uid\":\"" + tagUID + "\", \"lector\":\"" + nomLector + "\"}";
+    pCharacteristic->setValue(missatge.c_str());
+    pCharacteristic->notify();
+    Serial.println("Dada enviada a l'App: " + missatge);
+  } else {
+    Serial.println("Polsera llegida, però l'App no està connectada al Bluetooth!");
+  }
+
+  // 5. Mantenir el LED encès 1 segon, apagar-lo i aturar la lectura un moment
+  delay(1000); 
+  digitalWrite(LED_PIN, LOW);
+  rfid.PICC_HaltA();
+  delay(1500); 
+}
+
